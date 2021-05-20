@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algalog.domain.model.Cliente;
 import com.algaworks.algalog.domain.repository.ClienteRepository;
+import com.algaworks.algalog.domain.service.CatalogoClientesService;
 
 import lombok.AllArgsConstructor;
 
@@ -27,8 +27,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/clientes")
 public class ClienteController {
 	
-	@Autowired
 	private ClienteRepository clienteRepository;
+	private CatalogoClientesService catalogoClientesService;
 	
 	@GetMapping
 	public List<Cliente> listar() {
@@ -57,7 +57,7 @@ public class ClienteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cliente adicionar(@Valid @RequestBody Cliente cliente) {
-		return clienteRepository.save(cliente);
+		return catalogoClientesService.salvar(cliente);
 	}
 	
 	@PutMapping("/{clienteId}")
@@ -68,7 +68,7 @@ public class ClienteController {
 		}
 		
 		cliente.setId(clienteId);
-		cliente = clienteRepository.save(cliente);//Existe?
+		cliente = catalogoClientesService.salvar(cliente);
 		return ResponseEntity.ok(cliente);//cod 200
 	}
 	
@@ -78,7 +78,7 @@ public class ClienteController {
 			return ResponseEntity.notFound().build();	//Retorna o cod 404
 		}
 		
-		clienteRepository.deleteById(clienteId); //Existe?
+		catalogoClientesService.excluir(clienteId);
 		
 		return ResponseEntity.noContent().build(); //cod 204 sucesso
 	}
